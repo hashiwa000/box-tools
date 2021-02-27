@@ -2,6 +2,7 @@
 
 import http.server
 import json
+import requests
 
 class HttpHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
@@ -11,8 +12,7 @@ class HttpHandler(http.server.BaseHTTPRequestHandler):
         print('body = {}'.format(body))
         try:
             body = json.loads(body)
-            access_token = body.get('token', {}).get('read', {}).get('access_token')
-            print('access_token = {}'.format(access_token))
+            contents = self._get_changed_file(body)
         except json.decoder.JSONDecodeError as e:
             pass
         body = 'Hello, world!'
@@ -21,6 +21,23 @@ class HttpHandler(http.server.BaseHTTPRequestHandler):
         self.send_header('Content-length', len(body.encode()))
         self.end_headers()
         self.wfile.write(body.encode())
+
+    def _get_changed_file(self, body):
+        access_token = body.get('token', {}).get('read', {}).get('access_token')
+        src = body.get('source', {})
+        id_ = src.get('id')
+        name = src.get('name')
+        print('access_token = {}'.format(access_token))
+        print('file = {}({})'.format(name, id_))
+        url = 'https://api.box.com/2.0/files/{}/content/'.format(id_)
+        headers = {
+            'Authorization': 'Bearer {}'.format(access_token),
+        }
+        r = requests.get(url, headers=headers)
+        r.raise_for_status()
+        contents = r.text
+        print('contens = {}'.format(contents))
+        return contents
 
 
 if __name__ == '__main__':

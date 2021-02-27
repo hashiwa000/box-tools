@@ -7,17 +7,17 @@
 
 ## How to use
 
-```sh
-npx localtunnel --port 80
-```
+1. Run server.
+    ```sh
+    python3 src/server.py
+    ```
+1. Run localtunnel
+    ```sh
+    npx localtunnel --port 80
+    ```
+1. Raise a box custom skill event.
+    - https://app.box.com/developers/console
 
-```sh
-python3 server.py
-```
+## References
 
-```sh
-curl -X POST "https://xx.yy.zz" -v -d 'hoge'
-```
-
-https://app.box.com/developers/console
-
+- https://developer.box.com/reference/get-files-id-content/
