@@ -6,12 +6,15 @@ import requests
 
 class HttpHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
+        print(self.headers)
         content_length = int(self.headers.get("content-length"))
         print('content_length = {}'.format(content_length))
         body = self.rfile.read(content_length).decode("utf-8")
         print('body = {}'.format(body))
         try:
             body = json.loads(body)
+            if not self._verify_request(body, self.headers):
+                print('WARNING: invalid request')
             contents = self._get_changed_file(body)
         except json.decoder.JSONDecodeError as e:
             pass
@@ -21,6 +24,13 @@ class HttpHandler(http.server.BaseHTTPRequestHandler):
         self.send_header('Content-length', len(body.encode()))
         self.end_headers()
         self.wfile.write(body.encode())
+
+    def _verify_request(self, headers, body):
+        #TODO: implement
+        box_signature_primary = self.headers.get('box-signature-primary')
+        box_signature_secondary = self.headers.get('box-signature-secondary')
+        box_delivery_timestamp = self.headers.get('box-delivery-timestamp')
+        return True
 
     def _get_changed_file(self, body):
         access_token = body.get('token', {}).get('read', {}).get('access_token')

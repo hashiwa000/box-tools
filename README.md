@@ -21,3 +21,4 @@
 ## References
 
 - https://developer.box.com/reference/get-files-id-content/
+- https://developer.box.com/guides/webhooks/handle/verify-signatures/#verify-with-sdk
